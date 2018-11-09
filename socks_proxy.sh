@@ -1,20 +1,26 @@
 
 #!/bin/bash
 source ../proxy_servers
-read -p "Enter login:" login
-read -p "Enter destination: (ly or la)" destination
-	case $destination in 
-	LA | La | la | lA)
+COMMAND="$1";
+OPERATION="$2";
+	case $COMMAND+$OPERATION in
+	connect+LA | connect+La | connect+la | connect+lA)
+			read -p "Enter login:" login
 			echo "calling to Mephistopheles of Los Angeles..."
-        		ssh -f -C2qTnN -D 1080 $login@$laserver -p2212 && echo -e  " '$?'  - is the result of calling server"
-			echo "checking with netstat...:"
-			sudo netstat -tulpn | grep 1080
+        		ssh -f -C2qTnN -D 1080 $login@$laserver -p2212
+        		if [ $? -eq 0 ]; then echo "The connection has been established"
+                else 
+                	echo "Something went wrong during the connection process"
+                fi
 	;;
-	LY | Ly | ly | lY)
+	connect+LY | connect+Ly | connect+ly | connect+lY)
+            read -p "Enter login:" login
 			echo "calling Lithuania server..."
 			ssh -f -C2qTnN -D 1080 $login@$lyserver -p2212 && echo -e " '$?' - is the result of calling server"
-			echo "calling netstat...:"
-			sudo netstat -tulpn | grep 1080
+			if [ $? -eq 0 ]; then echo "The connection has been established"
+            else 
+                echo "Something went wrong during the connection process"
+            fi
 	;;
 
 		close)
@@ -30,6 +36,6 @@ read -p "Enter destination: (ly or la)" destination
 	fi
 	;;
 	*)
-			echo "Possible options are: close | check"
+			echo "Possible options are: connect + [ly|la] | close | status"
 		esac
 
